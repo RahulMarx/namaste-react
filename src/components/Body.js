@@ -8,6 +8,10 @@ const Body = () => {
     //State variable
     const [listofRestaurants, setlistofRestaurants] = useState([]);
 
+    const[filteredRestaurant,setFilteredRestaurant] = useState([]);
+
+    const [searchText,setSearchText] = useState("");
+
     useEffect(()=>{
         fetchData();
     },[]);
@@ -20,6 +24,7 @@ const Body = () => {
         const json = await data.json();
         console.log(json);
         setlistofRestaurants(json.data.cards[1].card.card.gridElements.infoWithStyle.restaurants);
+        setFilteredRestaurant(json.data.cards[1].card.card.gridElements.infoWithStyle.restaurants);
     }
 
     if(listofRestaurants.length === 0){
@@ -32,8 +37,23 @@ const Body = () => {
         <div className="body">
             <div className="filter">
                 <div className="search">
-                    <input type="text" className="search-box" />
-                    <button>Search</button>
+                    <input
+                     type="text"
+                     className="search-box"
+                     value={searchText}
+                     onChange={(e) => {
+                        setSearchText(e.target.value);
+                     }}
+                    />
+                    <button
+                        onClick={()=>{
+                            const filteredrestaurant = listofRestaurants.filter((res)=>res.info.name.toLowerCase().includes(searchText));
+
+                            setFilteredRestaurant(filteredrestaurant);
+                        }}
+                    >
+                        Search
+                    </button>
                 </div>
                 <button 
                     className="filter-btn"
@@ -52,7 +72,7 @@ const Body = () => {
             </div>
             <div className="res-container">
                 {
-                    listofRestaurants.map(restaurant => <RestaurantCard key={restaurant.info.id} resData = {restaurant}/>)
+                    filteredRestaurant.map(restaurant => <RestaurantCard key={restaurant.info.id} resData = {restaurant}/>)
                 }
             </div>
         </div>
